@@ -24,9 +24,6 @@ export async function getPlayerRankedProfile({ connectCode }: { connectCode: str
   })
     .then((r) => r.json() as Promise<UserProfilePageQueryResponse>)
     .then((r) => r.data.getUser);
-
-  console.log({ slippiUser });
-
   return {
     ...slippiUser.rankedNetplayProfile,
     rankName: getPlayerRankName(slippiUser.rankedNetplayProfile) || 'unknown',

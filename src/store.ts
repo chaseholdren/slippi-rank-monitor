@@ -1,15 +1,13 @@
-import type { RankedProfile, ReplayFile } from '#/types';
+import type { RankedProfile, ReplayFile, WithImmer } from '#/types';
 import { getPlayerRankedProfile } from '#/utils/getPlayerRankedProfile';
 import { SlippiGame, type PlayerType } from '@slippi/slippi-js';
-import { createStore } from 'zustand';
+import { produce } from 'immer';
+import { create, type StoreApi, type UseBoundStore } from 'zustand';
 
-type Config = {
+type State = {
   slippiReplayFolder: string;
   ignoreConnectCode?: string;
-};
 
-type StateProps = {
-  config: Config;
   replayFiles: ReplayFile[];
   playersByConnectCode: Record<
     string,
@@ -25,55 +23,66 @@ type Actions = {
   addReplayFile: (game: string) => void;
 };
 
-export type AppStoreState = StateProps & Actions;
+let useAppState: UseBoundStore<WithImmer<StoreApi<State & Actions>>>;
 
-export type AppStore = ReturnType<typeof createAppStore>;
+type InitialState = Partial<State> & Required<Pick<State, 'slippiReplayFolder'>>;
 
-export const createAppStore = (config: Config) => {
-  const useAppStore = createStore<AppStoreState>()((set) => ({
-    config,
+export function intializeAppState(initialState: InitialState) {
+  if (typeof useAppState !== 'undefined') {
+    console.warn('App state reinitializing');
+  }
+
+  useAppState = create<State & Actions>((set) => ({
+    ...initialState,
     replayFiles: [],
     playersByConnectCode: {},
-    addReplayFile: async (replayFile: string) => {
+    addReplayFile: (replayFile: string) => {
       const gameInfo = new SlippiGame(replayFile).getSettings();
       if (!gameInfo) return;
 
-      set((state) => {
-        state.replayFiles.push({
-          filepath: replayFile,
-          dateAdded: new Date(),
-          ...gameInfo,
-        });
-        return state;
-      });
+      set((state) =>
+        produce(state, (draft) => {
+          draft.replayFiles.push({
+            filepath: replayFile,
+            dateAdded: new Date(),
+            ...gameInfo,
+          });
+        }),
+      );
 
-      const playersToFetch = gameInfo.players.filter((player) => player.connectCode !== config.ignoreConnectCode);
+      const playersToFetch = gameInfo.players.filter((player) => player.connectCode !== initialState.ignoreConnectCode);
 
       for (const playerToFetch of playersToFetch) {
-        set((state) => {
-          state.playersByConnectCode[playerToFetch.connectCode] = {
-            playerFromReplayFile: playerToFetch,
-            isFetchingRankedData: true,
-          };
-          return state;
-        });
+        set((state) =>
+          produce(state, (draft) => {
+            draft.playersByConnectCode[playerToFetch.connectCode] = {
+              playerFromReplayFile: playerToFetch,
+              isFetchingRankedData: true,
+            };
+            return draft;
+          }),
+        );
 
         getPlayerRankedProfile({ connectCode: playerToFetch.connectCode })
           .then((rankedProfile) => {
-            set((state) => {
-              state.playersByConnectCode[playerToFetch.connectCode].rankedProfile = rankedProfile;
-              return state;
-            });
+            set((state) =>
+              produce(state, (draft) => {
+                draft.playersByConnectCode[playerToFetch.connectCode].rankedProfile = rankedProfile;
+                return draft;
+              }),
+            );
           })
           .finally(() => {
-            set((state) => {
-              state.playersByConnectCode[playerToFetch.connectCode].isFetchingRankedData = false;
-              return state;
-            });
+            set((state) =>
+              produce(state, (draft) => {
+                draft.playersByConnectCode[playerToFetch.connectCode].isFetchingRankedData = false;
+                return draft;
+              }),
+            );
           });
       }
     },
   }));
+}
 
-  return useAppStore;
-};
+export { useAppState };
