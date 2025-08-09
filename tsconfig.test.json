@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "composite": true,
+    "types": [
+      "bun/test-globals"
+    ]
+  },
+  "include": [
+    "*.test.ts",
+    "*.test.tsx"
+  ]
+}

@@ -8,7 +8,7 @@ export function getFolderWatcher(folderPath: string): FSWatcher {
     awaitWriteFinish: true,
     ignoreInitial: true,
     ignored: (file, stats) => Boolean(stats?.isFile()) && !file.endsWith('.slp'),
-    depth: 10,
+    depth: Bun.env.SLIPPI_REPLAY_FOLDER_DEPTH,
   });
   return watcher;
 }

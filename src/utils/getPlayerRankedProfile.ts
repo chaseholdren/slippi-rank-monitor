@@ -2,6 +2,7 @@ import type { RankedProfile } from '#/types';
 import { getPlayerRankName } from '#/utils/getPlayerRankName';
 
 export async function getPlayerRankedProfile({ connectCode }: { connectCode: string }): Promise<RankedProfile> {
+  debugger;
   const slippiUser = await fetch('https://internal.slippi.gg/graphql', {
     method: 'POST',
     headers: {

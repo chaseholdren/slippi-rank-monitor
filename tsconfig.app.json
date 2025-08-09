@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "composite": true
+  },
+  "include": [
+    "*.tsx",
+    "*.ts",
+    "global.d.ts"
+  ],
+  "exclude": [
+    "*.test.ts",
+    "*.test.tsx"
+  ]
+}

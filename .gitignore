@@ -24,3 +24,6 @@ Thumbs.db
 # Misc
 *.log
 *.tmp
+
+# Slippi
+slp-file-storage/

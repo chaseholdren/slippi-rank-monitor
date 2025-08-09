@@ -20,13 +20,11 @@ process.on('SIGINT', async () => {
 });
 
 export const App = () => {
-  const replayFolder = useAppState((state) => state.slippiReplayFolder);
   const addReplayFile = useAppState((state) => state.addReplayFile);
-  const ignoreConnectCode = useAppState((state) => state.ignoreConnectCode);
   const replayFiles = useAppState((state) => state.replayFiles);
 
   useEffect(() => {
-    folderWatcher = getFolderWatcher(replayFolder);
+    folderWatcher = getFolderWatcher(Bun.env.SLIPPI_REPLAY_FOLDER);
 
     folderWatcher.on('add', (filepath) => {
       try {
@@ -37,24 +35,24 @@ export const App = () => {
     return () => {
       folderWatcher.close();
     };
-  }, [replayFolder, addReplayFile]);
+  }, [addReplayFile]);
 
-  const uniquePlayers = useMemo(() => {
-    const players = new Set<string>();
+  const uniqueUserIds = useMemo(() => {
+    const userIds = new Set<string>();
     replayFiles.forEach((replayFile) => {
       replayFile.players.forEach((player) => {
-        if (player.connectCode !== ignoreConnectCode) {
-          players.add(player.connectCode);
+        if (!Bun.env.SLIPPI_IGNORE_CONNECT_CODE.includes(player.connectCode.toUpperCase())) {
+          userIds.add(player.userId);
         }
       });
     });
-    return players;
-  }, [replayFiles, ignoreConnectCode]);
+    return userIds;
+  }, [replayFiles]);
 
   return (
     <Box flexDirection='column' gap={1}>
-      {Array.from(uniquePlayers).map((connectCode) => (
-        <Player key={connectCode} connectCode={connectCode} />
+      {Array.from(uniqueUserIds).map((playerId) => (
+        <Player key={playerId} userId={playerId} />
       ))}
     </Box>
   );
