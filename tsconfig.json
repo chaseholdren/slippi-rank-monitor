@@ -25,10 +25,6 @@
     // "esModuleInterop": true,
     // "isolatedModules": true,
     "forceConsistentCasingInFileNames": true,
-    "typeRoots": [
-      "./node_modules/@types",
-      "./node_modules/bun-types"
-    ],
     "baseUrl": "./",
     "paths": {
       "#/*": [
@@ -36,17 +32,9 @@
       ],
     }
   },
-  "references": [
-    {
-      "path": "./tsconfig.app.json"
-    },
-    {
-      "path": "./tsconfig.test.json"
-    }
-  ],
   "include": [
-    "src/**/*",
-    "global.d.ts",
+    "**/*.ts",
+    "**/*.tsx"
   ],
   "exclude": [
     "node_modules"

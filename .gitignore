@@ -26,4 +26,4 @@ Thumbs.db
 *.tmp
 
 # Slippi
-slp-file-storage/
+slp-file-storage
