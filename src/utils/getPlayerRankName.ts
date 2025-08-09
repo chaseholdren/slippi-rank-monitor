@@ -81,6 +81,7 @@ export const SLIPPI_RANKS = [
 ];
 
 export function getPlayerRankName(player: Pick<RankedProfile, 'ratingOrdinal' | 'dailyRegionalPlacement'>) {
+  if (typeof player?.ratingOrdinal !== 'number') return;
   return SLIPPI_RANKS.find((rank) => {
     if (rank.requiresRegionPlacement) {
       return player.dailyRegionalPlacement && rank.minElo <= player.ratingOrdinal;

@@ -1,5 +1,5 @@
 import chokidar, { type FSWatcher } from 'chokidar';
-import fs from 'node:fs';
+import fs from 'fs';
 
 export function getFolderWatcher(folderPath: string): FSWatcher {
   ensureDirectoryExists(folderPath);

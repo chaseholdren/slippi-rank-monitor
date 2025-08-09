@@ -25,10 +25,10 @@ export async function getPlayerRankedProfile({ connectCode }: { connectCode: str
     .then((r) => r.json() as Promise<UserProfilePageQueryResponse>)
     .then((r) => r.data.getUser);
   return {
-    ...slippiUser.rankedNetplayProfile,
-    rankName: getPlayerRankName(slippiUser.rankedNetplayProfile) || 'unknown',
-    connectCode: slippiUser.connectCode.code,
-    displayName: slippiUser.displayName,
+    ...slippiUser?.rankedNetplayProfile,
+    rankName: getPlayerRankName(slippiUser?.rankedNetplayProfile) || 'unknown',
+    connectCode: slippiUser?.connectCode?.code || connectCode,
+    displayName: slippiUser?.displayName,
   };
 }
 

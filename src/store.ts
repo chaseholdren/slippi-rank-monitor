@@ -72,6 +72,9 @@ export function intializeAppState(initialState: InitialState) {
               }),
             );
           })
+          .catch((e) => {
+            console.error(e);
+          })
           .finally(() => {
             set((state) =>
               produce(state, (draft) => {
